@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}Appointment Summary & Review | MediCare Connect{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/booking.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Stepper Bar -->
+<div class="booking-stepper-wrap">
+    <div class="container">
+        <div class="booking-stepper">
+            <div class="step-item completed">
+                <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+                <span class="step-label">1. Select Hospital</span>
+            </div>
+            <div class="step-item completed">
+                <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+                <span class="step-label">2. Select Doctor</span>
+            </div>
+            <div class="step-item completed">
+                <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+                <span class="step-label">3. Date & Time</span>
+            </div>
+            <div class="step-item active">
+                <div class="step-circle"><i class="fa-solid fa-clipboard-check"></i></div>
+                <span class="step-label">4. Review Summary</span>
+            </div>
+            <div class="step-item">
+                <div class="step-circle">5</div>
+                <span class="step-label">5. Payment</span>
+            </div>
+            <div class="step-item">
+                <div class="step-circle">6</div>
+                <span class="step-label">6. Confirmation</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="summary-container">
+        <div class="summary-card">
+            <!-- Header -->
+            <div class="summary-header">
+                <div>
+                    <h1>Appointment Summary</h1>
+                    <p>Please review your booking details before proceeding to payment.</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.15); padding: 8px 16px; border-radius: var(--radius-full); font-size: 13px; font-weight: 700;">
+                    <i class="fa-solid fa-hourglass-half"></i> Awaiting Payment
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div class="summary-body">
+                <!-- Hidden Values for API Call -->
+                <input type="hidden" id="summaryDoctorId" value="{{ doctor.id }}">
+                <input type="hidden" id="summaryHospitalId" value="{{ doctor.hospital_id }}">
+                <input type="hidden" id="summaryDepartmentId" value="{{ doctor.department_id }}">
+                <input type="hidden" id="summaryDate" value="{{ date }}">
+                <input type="hidden" id="summaryTime" value="{{ time }}">
+                <input type="hidden" id="summaryReason" value="{{ reason }}">
+
+                <!-- 1. Patient Information -->
+                <div class="summary-section">
+                    <div class="summary-sec-title">
+                        <i class="fa-solid fa-user-circle"></i>
+                        <span>Patient Information</span>
+                    </div>
+                    <div class="summary-details-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Patient Full Name</span>
+                            <span class="detail-value">{{ patient.full_name if patient else (current_user.name if current_user else 'Guest Patient') }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Contact Email / Phone</span>
+                            <span class="detail-value">{{ user.email if user else (current_user.email if current_user else 'Provided upon checkout') }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Age & Gender</span>
+                            <span class="detail-value">{{ patient.age if patient else '28' }} Yrs • {{ patient.gender if patient else 'Male' }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Blood Group</span>
+                            <span class="detail-value">{{ patient.blood_group if patient else 'O+' }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Medical Appointment Details -->
+                <div class="summary-section">
+                    <div class="summary-sec-title">
+                        <i class="fa-solid fa-hospital-user"></i>
+                        <span>Consultation & Facility Details</span>
+                    </div>
+                    <div class="summary-details-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Assigned Specialist</span>
+                            <span class="detail-value" style="color: var(--primary);">{{ doctor.full_name }}</span>
+                            <span style="font-size: 12px; color: var(--text-muted);">{{ doctor.qualification }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Department</span>
+                            <span class="detail-value">{{ doctor.department_name }}</span>
+                            <span style="font-size: 12px; color: var(--text-muted);"><i class="fa-solid fa-door-open"></i> {{ doctor.cabin_number }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Hospital Location</span>
+                            <span class="detail-value">{{ doctor.hospital_name }}</span>
+                            <span style="font-size: 12px; color: var(--text-muted);"><i class="fa-solid fa-map-pin"></i> {{ doctor.hospital_location }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Scheduled Date & Time Slot</span>
+                            <span class="detail-value" style="color: #0369a1;">
+                                <i class="fa-regular fa-calendar-check"></i> {{ date }} at {{ time }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 16px; background: var(--bg-light); border-radius: var(--radius-sm); padding: 12px 16px; font-size: 13px;">
+                        <strong style="color: var(--dark-muted);">Chief Complaint / Reason:</strong>
+                        <span style="color: var(--dark);">{{ reason }}</span>
+                    </div>
+                </div>
+
+                <!-- 3. Fee Breakdown -->
+                <div class="summary-section">
+                    <div class="summary-sec-title">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                        <span>Fee Breakdown & Charges</span>
+                    </div>
+
+                    <div class="bill-breakdown">
+                        <div class="bill-row">
+                            <span>Specialist Consultation Fee</span>
+                            <span>₹{{ "%.2f"|format(fee) }}</span>
+                        </div>
+                        <div class="bill-row">
+                            <span>Hospital Tech & Digital Records Fee</span>
+                            <span>₹{{ "%.2f"|format(facility_charges) }}</span>
+                        </div>
+                        <div class="bill-row">
+                            <span>Applicable Taxes & Hospital Charges</span>
+                            <span style="color: #10b981; font-weight: 600;">FREE (Included)</span>
+                        </div>
+                        <div class="bill-row total-row">
+                            <span>Total Payable Amount</span>
+                            <span>₹{{ "%.2f"|format(total_amount) }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="summary-actions">
+                    <a href="{{ url_for('appointment_page') }}?doctor_id={{ doctor.id }}&hospital_id={{ doctor.hospital_id }}&department_id={{ doctor.department_id }}" class="btn btn-outline">
+                        <i class="fa-solid fa-arrow-left"></i> Back & Modify Schedule
+                    </a>
+
+                    <button type="button" class="btn btn-primary btn-lg" onclick="proceedToPaymentFromSummary(this)">
+                        <i class="fa-solid fa-credit-card"></i> Proceed to Payment
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/booking.js') }}"></script>
+{% endblock %}

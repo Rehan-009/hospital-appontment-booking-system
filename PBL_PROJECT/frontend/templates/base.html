@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MediCare | Hospital Appointment Booking System{% endblock %}</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <!-- Top Announcement Bar -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="top-bar-contact">
+                <span><i class="fa-solid fa-phone"></i> Emergency: <strong>108 / +91 (040) 4567-8901</strong></span>
+                <span><i class="fa-solid fa-clock"></i> OPD Hours: Mon - Sat: 8:00 AM - 8:00 PM</span>
+            </div>
+            <div class="top-bar-actions">
+                <span class="emergency-pill"><i class="fa-solid fa-truck-medical"></i> 24/7 Trauma Care</span>
+                <span><i class="fa-solid fa-shield-halved"></i> JCI & NABH Accredited</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="{% if current_user and current_user.role == 'doctor' %}{{ url_for('doctor_dashboard_page') }}{% else %}{{ url_for('home') }}{% endif %}" class="brand-logo">
+                    <div class="brand-icon-box">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                    </div>
+                    <div>
+                        <div class="brand-text">MediCare <span>Connect</span></div>
+                        <span class="brand-tag">Hospital Network System</span>
+                    </div>
+                </a>
+
+                <ul class="nav-links">
+                    {% if current_user and current_user.role == 'doctor' %}
+                        <li><a href="{{ url_for('home') }}#about" class="nav-link">About</a></li>
+                        <li><a href="{{ url_for('home') }}#services" class="nav-link">Services</a></li>
+                        <li><a href="{{ url_for('home') }}#contact" class="nav-link">Contact</a></li>
+                    {% else %}
+                        <li><a href="{{ url_for('home') }}" class="nav-link {% if request.path == '/' %}active{% endif %}">Home</a></li>
+                        <li><a href="{{ url_for('hospitals_page') }}" class="nav-link {% if request.path.startswith('/hospitals') %}active{% endif %}">Hospitals</a></li>
+                        <li><a href="{{ url_for('doctors_page') }}" class="nav-link {% if request.path.startswith('/doctors') %}active{% endif %}">Doctors</a></li>
+                        <li><a href="{% if current_user %}{{ url_for('patient_dashboard_page') }}{% else %}{{ url_for('hospitals_page') }}{% endif %}" class="nav-link">Appointments</a></li>
+                        <li><a href="{{ url_for('home') }}#about" class="nav-link">About</a></li>
+                        <li><a href="{{ url_for('home') }}#services" class="nav-link">Services</a></li>
+                        <li><a href="{{ url_for('home') }}#contact" class="nav-link">Contact</a></li>
+                    {% endif %}
+                </ul>
+
+                <div class="nav-actions">
+                    {% if current_user %}
+                        <div class="user-badge">
+                            <div class="user-avatar">
+                                {{ current_user.name[:1] | upper }}
+                            </div>
+                            <div class="user-name-role">
+                                <span class="user-name">{{ current_user.name }}</span>
+                                <span class="user-role-label">{{ current_user.role }}</span>
+                            </div>
+                        </div>
+                        <a href="{% if current_user.role == 'doctor' %}{{ url_for('doctor_dashboard_page') }}{% else %}{{ url_for('patient_dashboard_page') }}{% endif %}" class="btn btn-outline btn-sm">
+                            <i class="fa-solid fa-gauge"></i> Dashboard
+                        </a>
+                        <a href="{{ url_for('auth_bp.logout') }}" class="btn btn-outline btn-sm" title="Log Out">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        </a>
+                    {% else %}
+                        <button type="button" class="btn btn-outline open-login-btn" data-tab="login">
+                            <i class="fa-regular fa-user"></i> Sign In
+                        </button>
+                        <a href="{{ url_for('hospitals_page') }}" class="btn btn-primary">
+                            <i class="fa-regular fa-calendar-check"></i> Book Appointment
+                        </a>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Dynamic Content -->
+    <main style="flex-grow: 1;">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Professional Footer -->
+    <footer class="footer" id="contact">
+        <div class="footer-top">
+            <div class="container">
+                <div class="footer-grid">
+                    <div class="footer-brand">
+                        <a href="{{ url_for('home') }}" class="brand-logo" style="color: white;">
+                            <div class="brand-icon-box">
+                                <i class="fa-solid fa-heart-pulse"></i>
+                            </div>
+                            <div>
+                                <div class="brand-text">MediCare <span style="color: #38bdf8;">Connect</span></div>
+                                <span class="brand-tag" style="color: #94a3b8;">Unified Hospital Portal</span>
+                            </div>
+                        </a>
+                        <p class="footer-desc">
+                            MediCare Connect provides centralized hospital discovery, verified specialist appointments, and digital consultation management across premier healthcare networks.
+                        </p>
+                        <div style="display: flex; gap: 12px; margin-top: 16px;">
+                            <span style="color: #38bdf8;"><i class="fa-solid fa-shield-heart fa-2x"></i></span>
+                            <div style="font-size: 12px; color: #94a3b8;">
+                                Certified Healthcare Delivery<br>
+                                <strong>ISO 9001:2015 & NABH Standards</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="footer-title">Quick Links</h4>
+                        <ul class="footer-links">
+                            {% if current_user and current_user.role == 'doctor' %}
+                                <li><a href="{{ url_for('doctor_dashboard_page') }}">Doctor Dashboard</a></li>
+                                <li><a href="{{ url_for('home') }}#about">About MediCare</a></li>
+                                <li><a href="{{ url_for('home') }}#services">Clinical Services</a></li>
+                                <li><a href="{{ url_for('home') }}#contact">Emergency & Support</a></li>
+                            {% else %}
+                                <li><a href="{{ url_for('home') }}">Home Page</a></li>
+                                <li><a href="{{ url_for('hospitals_page') }}">Network Hospitals</a></li>
+                                <li><a href="{{ url_for('doctors_page') }}">Specialist Doctors</a></li>
+                                <li><a href="{{ url_for('hospitals_page') }}">Book Appointment</a></li>
+                                <li><a href="{{ url_for('patient_dashboard_page') }}">Patient Portal</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="footer-title">Specialities</h4>
+                        <ul class="footer-links">
+                            <li><a href="{{ url_for('doctors_page') }}?department_id=1">Cardiology & Heart Care</a></li>
+                            <li><a href="{{ url_for('doctors_page') }}?department_id=2">Neurology & Brain Sciences</a></li>
+                            <li><a href="{{ url_for('doctors_page') }}?department_id=3">Orthopedics & Joint Care</a></li>
+                            <li><a href="{{ url_for('doctors_page') }}?department_id=9">Pediatrics & Child Care</a></li>
+                            <li><a href="{{ url_for('doctors_page') }}?department_id=5">Oncology & Cancer Center</a></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="footer-title">Emergency & Support</h4>
+                        <ul class="footer-contact">
+                            <li>
+                                <i class="fa-solid fa-phone-volume"></i>
+                                <div>
+                                    <strong>24/7 Emergency Line</strong><br>
+                                    +91 (040) 4567-8901 / 108
+                                </div>
+                            </li>
+                            <li>
+                                <i class="fa-solid fa-envelope"></i>
+                                <div>
+                                    <strong>Patient Care Desk</strong><br>
+                                    support@medicareconnect.org
+                                </div>
+                            </li>
+                            <li>
+                                <i class="fa-solid fa-location-dot"></i>
+                                <div>
+                                    <strong>Headquarters</strong><br>
+                                    108 Healthcare Blvd, Central District
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="container">
+                <p>© {{ current_year }} MediCare Hospital Connect System. Designed for desktop medical excellence.</p>
+                <div style="display: flex; gap: 20px;">
+                    <a href="#" style="color: #64748b;">Privacy Policy</a>
+                    <a href="#" style="color: #64748b;">Terms of Clinical Service</a>
+                    <a href="#" style="color: #64748b;">HIPAA Compliance</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ================= LOGIN & REGISTRATION MODAL ================= -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal-card">
+            <button type="button" class="modal-close-btn" id="closeAuthModal">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="modal-header">
+                <div class="modal-icon-box">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+                <h2 class="modal-title">Welcome to MediCare</h2>
+                <p class="modal-subtitle">Access your hospital appointments and medical history</p>
+            </div>
+
+            <!-- Tab Switcher -->
+            <div class="modal-tabs">
+                <button type="button" class="modal-tab-btn active" data-tab="login">Sign In</button>
+                <button type="button" class="modal-tab-btn" data-tab="register">Create Account</button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Quick Demo Autofill Box -->
+                <div class="demo-credentials-box">
+                    <div class="demo-credentials-title">
+                        <i class="fa-solid fa-bolt" style="color: #f59e0b;"></i> Quick Demo Login
+                    </div>
+                    <div class="demo-btn-group">
+                        <button type="button" class="btn-demo" id="demoPatientBtn">
+                            <i class="fa-solid fa-user-injured"></i> Test Patient (1234)
+                        </button>
+                        <button type="button" class="btn-demo" id="demoDoctorBtn">
+                            <i class="fa-solid fa-user-doctor"></i> Test Doctor (1234)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 1. SIGN IN TAB PANE -->
+                <div class="tab-pane active" id="loginTabPane">
+                    <form id="modalLoginForm">
+                        <div class="form-group">
+                            <label for="loginIdentifier">Email Address or Phone Number</label>
+                            <div class="input-box">
+                                <i class="fa-solid fa-envelope input-icon"></i>
+                                <input type="text" id="loginIdentifier" placeholder="name@example.com or 9876543210" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <div class="input-box">
+                                <i class="fa-solid fa-lock input-icon"></i>
+                                <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                                <button type="button" class="toggle-password"><i class="fa-solid fa-eye"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="form-extras">
+                            <label class="remember-me">
+                                <input type="checkbox" checked> Remember me
+                            </label>
+                            <a href="#" class="forgot-link" onclick="showToast('Password Reset', 'In demo mode, please use test password: 1234', 'info'); return false;">Forgot Password?</a>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block btn-lg">
+                            <i class="fa-solid fa-right-to-bracket"></i> Sign In to Account
+                        </button>
+                    </form>
+                </div>
+
+                <!-- 2. REGISTRATION TAB PANE -->
+                <div class="tab-pane" id="registerTabPane">
+                    <form id="modalRegisterForm">
+                        <div class="form-group">
+                            <label for="regFullName">Full Legal Name</label>
+                            <div class="input-box">
+                                <i class="fa-solid fa-user input-icon"></i>
+                                <input type="text" id="regFullName" placeholder="e.g. John Doe" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="regEmail">Email Address</label>
+                                <div class="input-box">
+                                    <i class="fa-solid fa-envelope input-icon"></i>
+                                    <input type="email" id="regEmail" placeholder="user@gmail.com" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="regPhone">Mobile Number</label>
+                                <div class="input-box">
+                                    <i class="fa-solid fa-phone input-icon"></i>
+                                    <input type="tel" id="regPhone" placeholder="10-digit number" maxlength="10" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="regAge">Age</label>
+                                <div class="input-box">
+                                    <i class="fa-solid fa-calendar-day input-icon"></i>
+                                    <input type="number" id="regAge" placeholder="e.g. 30" min="1" max="120" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="regGender">Gender</label>
+                                <div class="input-box">
+                                    <i class="fa-solid fa-venus-mars input-icon"></i>
+                                    <select id="regGender" required>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="regRole">Register Account As</label>
+                            <div class="input-box">
+                                <i class="fa-solid fa-hospital-user input-icon"></i>
+                                <select id="regRole" required>
+                                    <option value="patient" selected>Patient (Book appointments & manage healthcare)</option>
+                                    <option value="doctor">Doctor (Consultations & doctor dashboard)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="regPassword">Password</label>
+                                <div class="input-box">
+                                    <i class="fa-solid fa-lock input-icon"></i>
+                                    <input type="password" id="regPassword" placeholder="Create password" required>
+                                    <button type="button" class="toggle-password"><i class="fa-solid fa-eye"></i></button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="regConfirmPassword">Confirm Password</label>
+                                <div class="input-box">
+                                    <i class="fa-solid fa-lock input-icon"></i>
+                                    <input type="password" id="regConfirmPassword" placeholder="Repeat password" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="font-size: 12px; color: #64748b; margin-bottom: 20px;">
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input type="checkbox" required checked>
+                                I agree to the MediCare Hospital Connect Terms of Care and Privacy Policy.
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block btn-lg">
+                            <i class="fa-solid fa-user-plus"></i> Create Account
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

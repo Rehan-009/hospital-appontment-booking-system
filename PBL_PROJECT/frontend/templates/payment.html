@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+
+{% block title %}Secure Payment | MediCare Connect{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/booking.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Stepper Bar -->
+<div class="booking-stepper-wrap">
+    <div class="container">
+        <div class="booking-stepper">
+            <div class="step-item completed">
+                <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+                <span class="step-label">1. Select Hospital</span>
+            </div>
+            <div class="step-item completed">
+                <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+                <span class="step-label">2. Select Doctor</span>
+            </div>
+            <div class="step-item completed">
+                <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+                <span class="step-label">3. Date & Time</span>
+            </div>
+            <div class="step-item completed">
+                <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+                <span class="step-label">4. Review Summary</span>
+            </div>
+            <div class="step-item active">
+                <div class="step-circle"><i class="fa-solid fa-credit-card"></i></div>
+                <span class="step-label">5. Payment</span>
+            </div>
+            <div class="step-item">
+                <div class="step-circle">6</div>
+                <span class="step-label">6. Confirmation</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="payment-layout">
+        <!-- Left: Payment Form & Options -->
+        <main class="payment-methods-card">
+            <h1 class="payment-title">Select Payment Method</h1>
+            <p class="payment-subtitle">Complete your transaction using our secure encrypted checkout.</p>
+
+            <form id="paymentForm">
+                <input type="hidden" id="payAppointmentId" value="{{ appointment.id }}">
+                <input type="hidden" id="payTotalAmount" value="{{ total_amount }}">
+                <input type="hidden" id="selectedPaymentMethod" value="UPI">
+
+                <!-- Payment Method Switcher -->
+                <div class="payment-tabs">
+                    <button type="button" class="pay-tab-btn active" data-method="upi" data-label="UPI">
+                        <i class="fa-solid fa-mobile-screen"></i>
+                        <span>UPI / QR</span>
+                    </button>
+                    <button type="button" class="pay-tab-btn" data-method="creditCard" data-label="Credit Card">
+                        <i class="fa-solid fa-credit-card"></i>
+                        <span>Credit Card</span>
+                    </button>
+                    <button type="button" class="pay-tab-btn" data-method="debitCard" data-label="Debit Card">
+                        <i class="fa-regular fa-credit-card"></i>
+                        <span>Debit Card</span>
+                    </button>
+                    <button type="button" class="pay-tab-btn" data-method="netBanking" data-label="Net Banking">
+                        <i class="fa-solid fa-building-columns"></i>
+                        <span>Net Banking</span>
+                    </button>
+                </div>
+
+                <!-- 1. UPI PANEL -->
+                <div class="payment-panel" id="upiPanel">
+                    <div class="upi-panel">
+                        <div class="upi-qr-box">
+                            <i class="fa-solid fa-qrcode"></i>
+                            <span>Scan with any UPI App</span>
+                        </div>
+                        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px;">
+                            Supported Apps: Google Pay, PhonePe, Paytm, BHIM, Amazon Pay
+                        </p>
+                        <div class="upi-or">OR ENTER UPI VPA ID</div>
+
+                        <div class="form-group" style="text-align: left; max-width: 380px; margin: 0 auto 20px;">
+                            <label>Virtual Payment Address (VPA)</label>
+                            <div class="input-box">
+                                <i class="fa-solid fa-at input-icon"></i>
+                                <input type="text" id="upiIdInput" placeholder="username@okhdfcbank" value="patient@okhdfcbank">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. CREDIT CARD PANEL -->
+                <div class="payment-panel" id="creditCardPanel" style="display: none;">
+                    <div class="card-preview">
+                        <div class="card-chip"></div>
+                        <div class="card-num-preview" id="cardNumPreview">•••• •••• •••• ••••</div>
+                        <div class="card-holder-exp">
+                            <div>
+                                <span>Cardholder</span>
+                                <strong id="cardHolderPreview">VAMSHI KUMAR</strong>
+                            </div>
+                            <div style="text-align: right;">
+                                <span>Expires</span>
+                                <strong id="cardExpiryPreview">12/28</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Card Number</label>
+                        <div class="input-box">
+                            <i class="fa-regular fa-credit-card input-icon"></i>
+                            <input type="text" id="cardNumberInput" placeholder="4532 8920 1829 3849" maxlength="19" value="4532 8920 1829 3849">
+                        </div>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label>Name on Card</label>
+                            <div class="input-box">
+                                <i class="fa-solid fa-user input-icon"></i>
+                                <input type="text" id="cardHolderInput" placeholder="Vamshi Kumar" value="Vamshi Kumar">
+                            </div>
+                        </div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label>Expiry Date</label>
+                                <div class="input-box">
+                                    <input type="text" id="cardExpiryInput" placeholder="MM/YY" maxlength="5" value="12/28" style="padding-left: 14px;">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>CVV</label>
+                                <div class="input-box">
+                                    <input type="password" id="cardCvvInput" placeholder="•••" maxlength="4" value="123" style="padding-left: 14px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. DEBIT CARD PANEL -->
+                <div class="payment-panel" id="debitCardPanel" style="display: none;">
+                    <div class="form-group">
+                        <label>Debit Card Number</label>
+                        <div class="input-box">
+                            <i class="fa-solid fa-credit-card input-icon"></i>
+                            <input type="text" placeholder="6071 8920 3829 4819" maxlength="19" value="6071 8920 3829 4819">
+                        </div>
+                    </div>
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label>Bank Name</label>
+                            <div class="input-box">
+                                <select>
+                                    <option>HDFC Bank</option>
+                                    <option>State Bank of India (SBI)</option>
+                                    <option>ICICI Bank</option>
+                                    <option>Axis Bank</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label>Expiry</label>
+                                <input type="text" placeholder="MM/YY" maxlength="5" value="09/27" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                            </div>
+                            <div class="form-group">
+                                <label>CVV</label>
+                                <input type="password" placeholder="•••" maxlength="3" value="456" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. NET BANKING PANEL -->
+                <div class="payment-panel" id="netBankingPanel" style="display: none;">
+                    <label style="font-size: 13px; font-weight: 700; margin-bottom: 12px; display: block;">Select Popular Bank</label>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;">
+                        <label style="border: 1px solid var(--border-color); padding: 12px; border-radius: var(--radius-md); text-align: center; cursor: pointer; display: block; font-size: 13px; font-weight: 600;">
+                            <input type="radio" name="bank" checked> HDFC Bank
+                        </label>
+                        <label style="border: 1px solid var(--border-color); padding: 12px; border-radius: var(--radius-md); text-align: center; cursor: pointer; display: block; font-size: 13px; font-weight: 600;">
+                            <input type="radio" name="bank"> ICICI Bank
+                        </label>
+                        <label style="border: 1px solid var(--border-color); padding: 12px; border-radius: var(--radius-md); text-align: center; cursor: pointer; display: block; font-size: 13px; font-weight: 600;">
+                            <input type="radio" name="bank"> SBI
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Simulation Guarantee Notice -->
+                <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--radius-md); padding: 14px 18px; margin-bottom: 24px; font-size: 13px; color: #166534; display: flex; align-items: center; gap: 12px;">
+                    <i class="fa-solid fa-shield-halved fa-2x" style="color: #22c55e;"></i>
+                    <div>
+                        <strong>Demo Simulated Gateway Active:</strong>
+                        <span> No real money is deducted. Submitting will simulate bank verification and confirm your official appointment receipt.</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-lg" id="payNowBtn">
+                    <i class="fa-solid fa-lock"></i> Pay ₹{{ "%.2f"|format(total_amount) }} & Confirm Appointment
+                </button>
+            </form>
+        </main>
+
+        <!-- Right: Order / Appointment Mini Summary -->
+        <aside>
+            <div style="background: white; border-radius: var(--radius-xl); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); padding: 28px; position: sticky; top: 100px;">
+                <h3 style="font-size: 17px; font-weight: 800; color: var(--dark); margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-light);">
+                    Booking Details
+                </h3>
+
+                <div style="margin-bottom: 20px;">
+                    <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--primary);">Appointment Ref</span>
+                    <div style="font-size: 17px; font-weight: 800; color: var(--dark); font-family: monospace;">
+                        {{ appointment.appointment_number }}
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 14px; font-size: 13.5px; margin-bottom: 24px;">
+                    <div>
+                        <span style="color: var(--text-muted); font-size: 11.5px; display: block;">Doctor & Specialty</span>
+                        <strong style="color: var(--dark);">{{ appointment.doctor_name }}</strong>
+                        <div style="font-size: 12px; color: var(--text-muted);">{{ appointment.doctor_specialization }}</div>
+                    </div>
+                    <div>
+                        <span style="color: var(--text-muted); font-size: 11.5px; display: block;">Hospital</span>
+                        <strong style="color: var(--dark);">{{ appointment.hospital_name }}</strong>
+                    </div>
+                    <div>
+                        <span style="color: var(--text-muted); font-size: 11.5px; display: block;">Date & Time Slot</span>
+                        <strong style="color: #0284c7;"><i class="fa-regular fa-calendar"></i> {{ appointment.appointment_date }} at {{ appointment.appointment_time }}</strong>
+                    </div>
+                    <div>
+                        <span style="color: var(--text-muted); font-size: 11.5px; display: block;">Patient</span>
+                        <strong style="color: var(--dark);">{{ appointment.patient_name }} ({{ appointment.patient_age }} Yrs)</strong>
+                    </div>
+                </div>
+
+                <div class="bill-breakdown" style="padding: 16px;">
+                    <div class="bill-row" style="font-size: 13px; margin-bottom: 8px;">
+                        <span>Doctor Consultation</span>
+                        <span>₹{{ "%.2f"|format(fee) }}</span>
+                    </div>
+                    <div class="bill-row" style="font-size: 13px; margin-bottom: 8px;">
+                        <span>Hospital Processing Fee</span>
+                        <span>₹{{ "%.2f"|format(facility_charges) }}</span>
+                    </div>
+                    <div class="bill-row total-row" style="margin-top: 10px; padding-top: 10px; font-size: 17px;">
+                        <span>Total Due</span>
+                        <span>₹{{ "%.2f"|format(total_amount) }}</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<!-- Simulated Processing Modal Overlay -->
+<div class="payment-processing-overlay" id="paymentProcessingOverlay">
+    <div class="processing-card">
+        <div class="payment-spinner"></div>
+        <h3>Simulating Secure Payment</h3>
+        <p id="processingStatusText">Connecting to bank authentication servers...</p>
+        <div style="font-size: 12px; color: #94a3b8; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <i class="fa-solid fa-lock"></i> 256-Bit SSL Healthcare Encryption
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/booking.js') }}"></script>
+{% endblock %}

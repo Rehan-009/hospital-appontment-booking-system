@@ -1,0 +1,396 @@
+{% extends "base.html" %}
+
+{% block title %}MediCare Connect | Premier Hospital Appointment Booking System{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="hero-grid">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fa-solid fa-hospital" style="color: var(--primary);"></i>
+                    <span>Premier Healthcare Network & Certified Specialists</span>
+                </div>
+                <h1 class="hero-title">
+                    Seamless Healthcare, <span>Instant Hospital</span> Appointments.
+                </h1>
+                <p class="hero-desc">
+                    Connect with world-class hospitals and verified medical specialists in minutes. Browse departments, pick confirmed time slots, make secure payments, and manage your health records on a single platform.
+                </p>
+                <div class="hero-cta">
+                    <a href="{{ url_for('hospitals_page') }}" class="btn btn-primary btn-lg">
+                        <i class="fa-solid fa-calendar-check"></i> Book an Appointment
+                    </a>
+                    <a href="{{ url_for('doctors_page') }}" class="btn btn-outline btn-lg">
+                        <i class="fa-solid fa-user-doctor"></i> Find a Doctor
+                    </a>
+                </div>
+
+                <div class="hero-trust">
+                    <div class="trust-item">
+                        <div class="trust-icon">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </div>
+                        <div class="trust-text">
+                            <strong>100% Verified</strong>
+                            <span>Top Medical Specialists</span>
+                        </div>
+                    </div>
+                    <div class="trust-item">
+                        <div class="trust-icon">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                        <div class="trust-text">
+                            <strong>Instant Booking</strong>
+                            <span>Real-Time Slot Confirmation</span>
+                        </div>
+                    </div>
+                    <div class="trust-item">
+                        <div class="trust-icon">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                        </div>
+                        <div class="trust-text">
+                            <strong>Zero Wait Time</strong>
+                            <span>Scheduled Consultations</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero Graphic / Real Image -->
+            <div class="hero-image-wrap">
+                <div class="hero-img-card">
+                    <img src="{{ url_for('static', filename='images/hero-hospital.png') }}" alt="Modern Hospital Facilities" onerror="this.src='/static/images/hospital-1.png'">
+                </div>
+
+                <!-- Floating Accent Badge 1 -->
+                <div class="floating-badge floating-badge-1">
+                    <div class="badge-icon">
+                        <i class="fa-solid fa-stethoscope"></i>
+                    </div>
+                    <div class="badge-text">
+                        <strong>50+ Specialists</strong>
+                        <span>Cardiology, Neuro, Ortho</span>
+                    </div>
+                </div>
+
+                <!-- Floating Accent Badge 2 -->
+                <div class="floating-badge floating-badge-2">
+                    <div class="badge-icon" style="background: #e0f2fe; color: #0284c7;">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <div class="badge-text">
+                        <strong>4.9 / 5.0 Rating</strong>
+                        <span>From 12,000+ Happy Patients</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Search Box -->
+<section class="search-section">
+    <div class="container">
+        <div class="search-box">
+            <form action="{{ url_for('doctors_page') }}" method="GET" class="search-form">
+                <div class="form-field">
+                    <label><i class="fa-solid fa-hospital"></i> Select Hospital</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-chevron-down"></i>
+                        <select name="hospital_id">
+                            <option value="">All Partner Hospitals</option>
+                            {% for h in hospitals %}
+                                <option value="{{ h.id }}">{{ h.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label><i class="fa-solid fa-stethoscope"></i> Select Department</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-chevron-down"></i>
+                        <select name="department_id">
+                            <option value="">All Medical Departments</option>
+                            {% for d in departments %}
+                                <option value="{{ d.name }}">{{ d.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label><i class="fa-solid fa-magnifying-glass"></i> Doctor or Condition</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-user-doctor"></i>
+                        <input type="text" name="search" placeholder="e.g. Cardiologist, Dr. Sharma, Knee pain">
+                    </div>
+                </div>
+
+                <div class="form-field" style="justify-content: flex-end;">
+                    <button type="submit" class="btn btn-primary btn-lg" style="height: 48px; width: 100%;">
+                        <i class="fa-solid fa-search"></i> Search Doctors
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Popular Hospitals Section -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-subtitle">Premier Medical Facilities</span>
+            <h2 class="section-title">Popular Network Hospitals</h2>
+            <p class="section-desc">
+                Choose from nationally recognized multi-speciality hospitals equipped with modern ICUs, advanced surgical robotics, and 24/7 emergency facilities.
+            </p>
+        </div>
+
+        <div class="hospital-grid">
+            {% for hosp in hospitals %}
+                <div class="hospital-card">
+                    <div class="hospital-thumb">
+                        <img src="{{ hosp.image_url }}" alt="{{ hosp.name }}" onerror="this.src='/static/images/hospital-1.png'">
+                        <div class="hospital-badge-top">
+                            <i class="fa-solid fa-location-dot"></i> {{ hosp.location }}
+                        </div>
+                        <div class="hospital-rating">
+                            <i class="fa-solid fa-star"></i>
+                            <span>{{ hosp.rating }}</span> ({{ hosp.total_reviews }})
+                        </div>
+                    </div>
+                    <div class="hospital-body">
+                        <h3 class="hospital-name">{{ hosp.name }}</h3>
+                        <div class="hospital-location">
+                            <i class="fa-solid fa-map-pin"></i> {{ hosp.address }}
+                        </div>
+                        <p class="hospital-desc">{{ hosp.description }}</p>
+
+                        <div class="hospital-meta">
+                            <div class="meta-item">
+                                <i class="fa-solid fa-user-doctor"></i>
+                                <span>{{ hosp.doctor_count or '8+' }} Specialists</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fa-solid fa-shield-halved"></i>
+                                <span>{{ hosp.emergency_hours }}</span>
+                            </div>
+                        </div>
+
+                        <div class="hospital-actions">
+                            <a href="{{ url_for('doctors_page') }}?hospital_id={{ hosp.id }}" class="btn btn-outline">
+                                View Doctors
+                            </a>
+                            <a href="{{ url_for('doctors_page') }}?hospital_id={{ hosp.id }}" class="btn btn-primary">
+                                Book Appointment
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Featured Doctors Section -->
+<section class="section section-bg">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-subtitle">Expert Medical Care</span>
+            <h2 class="section-title">Featured Specialist Doctors</h2>
+            <p class="section-desc">
+                Consult with certified leaders in cardiology, neurology, pediatrics, and surgical oncology with proven clinical excellence.
+            </p>
+        </div>
+
+        <div class="doctor-grid">
+            {% for doc in doctors %}
+                <div class="doctor-card">
+                    <div class="doctor-thumb">
+                        <img src="{{ doc.image_url }}" alt="{{ doc.full_name }}" onerror="this.src='/static/images/doctor-1.png'">
+                        <div class="doctor-exp-badge">
+                            <i class="fa-solid fa-award"></i> {{ doc.experience_years }}+ Yrs Experience
+                        </div>
+                    </div>
+                    <div class="doctor-body">
+                        <span class="doctor-dept">{{ doc.department_name }}</span>
+                        <h3 class="doctor-name">{{ doc.full_name }}</h3>
+                        <p class="doctor-qual">{{ doc.qualification }}</p>
+                        
+                        <div class="doctor-hospital-name">
+                            <i class="fa-solid fa-hospital"></i> {{ doc.hospital_name }}
+                        </div>
+
+                        <div class="doctor-fee-schedule">
+                            <div>
+                                <span class="fee-label">Consultation Fee</span>
+                                <span class="fee-amount">₹{{ "%.0f"|format(doc.consultation_fee) }}</span>
+                            </div>
+                            <div class="schedule-days">
+                                <i class="fa-regular fa-calendar"></i> {{ doc.available_days }}
+                            </div>
+                        </div>
+
+                        <a href="{{ url_for('appointment_page') }}?doctor_id={{ doc.id }}&hospital_id={{ doc.hospital_id }}&department_id={{ doc.department_id }}" class="btn btn-primary btn-block">
+                            <i class="fa-solid fa-calendar-plus"></i> Book Appointment
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="{{ url_for('doctors_page') }}" class="btn btn-outline btn-lg">
+                View All Specialists <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Clinical Services Section -->
+<section class="section" id="services">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-subtitle">Comprehensive Healthcare</span>
+            <h2 class="section-title">Hospital Services & Specialities</h2>
+            <p class="section-desc">
+                State-of-the-art diagnostic, surgical, and therapeutic medical departments designed for optimal patient outcomes.
+            </p>
+        </div>
+
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon-box">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+                <h3 class="service-title">Cardiology & Cath Lab</h3>
+                <p class="service-desc">
+                    Comprehensive non-invasive & interventional cardiac treatments, ECG, 2D Echo, angiography, and 24/7 emergency heart attack response.
+                </p>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon-box">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+                <h3 class="service-title">Neurology & Spine</h3>
+                <p class="service-desc">
+                    Specialized care for neurological disorders, stroke prevention, Parkinson's care, epilepsy treatment, and minimally invasive spine surgeries.
+                </p>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon-box">
+                    <i class="fa-solid fa-bone"></i>
+                </div>
+                <h3 class="service-title">Orthopedics & Joint Care</h3>
+                <p class="service-desc">
+                    Robotic joint replacement, sports injury arthroscopy, trauma rehabilitation, and advanced musculoskeletal care programs.
+                </p>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon-box">
+                    <i class="fa-solid fa-baby"></i>
+                </div>
+                <h3 class="service-title">Pediatrics & NICU</h3>
+                <p class="service-desc">
+                    Specialized child healthcare, neonatal intensive care units, developmental assessments, and routine pediatric vaccination clinics.
+                </p>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon-box">
+                    <i class="fa-solid fa-ribbon"></i>
+                </div>
+                <h3 class="service-title">Comprehensive Oncology</h3>
+                <p class="service-desc">
+                    Multi-disciplinary cancer therapy, precision chemotherapy, surgical oncology, immunotherapy, and dedicated patient support programs.
+                </p>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon-box">
+                    <i class="fa-solid fa-x-ray"></i>
+                </div>
+                <h3 class="service-title">Radiology & 3T MRI</h3>
+                <p class="service-desc">
+                    High-precision 128-slice CT scans, 3.0 Tesla MRI diagnostics, digital mammography, 4D ultrasound, and guided biopsies.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Counter -->
+<section class="stats-section">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <h3>50<span>+</span></h3>
+                <p>Board Certified Doctors</p>
+            </div>
+            <div class="stat-item">
+                <h3>15k<span>+</span></h3>
+                <p>Appointments Booked</p>
+            </div>
+            <div class="stat-item">
+                <h3>24<span>/7</span></h3>
+                <p>Trauma & Emergency Care</p>
+            </div>
+            <div class="stat-item">
+                <h3>99.4<span>%</span></h3>
+                <p>Patient Satisfaction Rate</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About MediCare Section -->
+<section class="section" id="about">
+    <div class="container">
+        <div class="about-grid">
+            <div class="about-content">
+                <span class="section-subtitle">About MediCare Connect</span>
+                <h2 class="section-title">A Digital Healthcare Bridge Connecting Patients & Doctors</h2>
+                <p style="color: var(--text-muted); font-size: 16px; margin-bottom: 20px;">
+                    MediCare Hospital Connect eliminates long hospital waiting lines by providing transparent, real-time doctor availability and digitized booking workflows. Whether you need a routine health check-up or an urgent consultation with a super-specialist, our platform ensures verified appointments without hassle.
+                </p>
+
+                <div class="about-features">
+                    <div class="about-feature-box">
+                        <i class="fa-solid fa-calendar-check"></i>
+                        <h4>Real-Time Slot Engine</h4>
+                        <p>Prevents double booking with dynamic synchronization across doctor schedules.</p>
+                    </div>
+                    <div class="about-feature-box">
+                        <i class="fa-solid fa-file-invoice"></i>
+                        <h4>Official Digital Receipts</h4>
+                        <p>Generate, download, and print official hospital admission & OPD receipts instantly.</p>
+                    </div>
+                    <div class="about-feature-box">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <h4>Reschedule & Cancel</h4>
+                        <p>Manage appointments right from your patient dashboard with automatic refunds.</p>
+                    </div>
+                    <div class="about-feature-box">
+                        <i class="fa-solid fa-lock"></i>
+                        <h4>Confidential & Secure</h4>
+                        <p>Built with enterprise role-based authorization for medical records privacy.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <img src="{{ url_for('static', filename='images/hospital-2.png') }}" alt="MediCare Hospital Group" style="border-radius: var(--radius-xl); box-shadow: var(--shadow-xl);" onerror="this.src='/static/images/hospital-1.png'">
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

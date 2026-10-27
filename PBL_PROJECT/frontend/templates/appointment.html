@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}Schedule Appointment | MediCare Connect{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/booking.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Stepper Bar -->
+<div class="booking-stepper-wrap">
+    <div class="container">
+        <div class="booking-stepper">
+            <div class="step-item completed">
+                <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+                <span class="step-label">1. Select Hospital</span>
+            </div>
+            <div class="step-item completed">
+                <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+                <span class="step-label">2. Select Doctor</span>
+            </div>
+            <div class="step-item active">
+                <div class="step-circle"><i class="fa-solid fa-calendar-days"></i></div>
+                <span class="step-label">3. Date & Time</span>
+            </div>
+            <div class="step-item">
+                <div class="step-circle">4</div>
+                <span class="step-label">4. Review Summary</span>
+            </div>
+            <div class="step-item">
+                <div class="step-circle">5</div>
+                <span class="step-label">5. Payment</span>
+            </div>
+            <div class="step-item">
+                <div class="step-circle">6</div>
+                <span class="step-label">6. Confirmation</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="schedule-container">
+        <!-- Selected Hospital, Department, Doctor Banner -->
+        <div class="booking-header-card">
+            <div class="doctor-mini-profile">
+                <div class="doctor-mini-thumb">
+                    <img src="{{ doctor.image_url if doctor else '/static/images/doctor-1.png' }}" alt="{{ doctor.full_name if doctor else 'Doctor' }}" onerror="this.src='/static/images/doctor-1.png'">
+                </div>
+                <div class="doctor-mini-info">
+                    <h2>{{ doctor.full_name if doctor else 'Specialist Doctor' }}</h2>
+                    <p>{{ doctor.specialization if doctor else 'Department Specialist' }} • {{ doctor.qualification if doctor else '' }}</p>
+                    <div class="doctor-mini-badges">
+                        <span class="mini-badge mini-badge-primary">
+                            <i class="fa-solid fa-hospital"></i> {{ hospital.name if hospital else (doctor.hospital_name if doctor else 'Hospital') }}
+                        </span>
+                        <span class="mini-badge">
+                            <i class="fa-solid fa-stethoscope"></i> {{ doctor.department_name if doctor else 'General' }}
+                        </span>
+                        <span class="mini-badge">
+                            <i class="fa-solid fa-door-open"></i> {{ doctor.cabin_number if doctor else 'Cabin 101' }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fee-pill-box">
+                <span>Standard OPD Fee</span>
+                <strong>₹{{ "%.0f"|format(doctor.consultation_fee if doctor else 500) }}</strong>
+            </div>
+        </div>
+
+        <!-- Hidden ID Holders for JS -->
+        <input type="hidden" id="doctorIdHolder" value="{{ doctor.id if doctor else 1 }}">
+        <input type="hidden" id="hospitalIdHolder" value="{{ hospital.id if hospital else (doctor.hospital_id if doctor else 1) }}">
+        <input type="hidden" id="departmentIdHolder" value="{{ doctor.department_id if doctor else 1 }}">
+
+        <!-- Schedule Main Card -->
+        <div class="schedule-grid-card">
+            <form action="{{ url_for('summary_page') }}" method="GET" id="scheduleForm">
+                <input type="hidden" name="doctor_id" value="{{ doctor.id if doctor else 1 }}">
+                <input type="hidden" name="time" id="selectedTimeInput" required>
+
+                <!-- 1. Date Selection Section -->
+                <div class="date-picker-row">
+                    <div class="schedule-section-title">
+                        <i class="fa-solid fa-calendar-day"></i>
+                        <span>Step 1: Choose Appointment Date</span>
+                    </div>
+
+                    <div class="date-input-group">
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-calendar"></i>
+                            <input type="date" name="date" id="appointmentDateInput" required>
+                        </div>
+                        <div class="date-selected-info" id="selectedDateDisplay">
+                            <i class="fa-regular fa-calendar-check"></i>
+                            <span>Select a date above to display available doctor slots</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Time Slot Selection Section -->
+                <div class="slots-grid-wrapper">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div class="schedule-section-title" style="margin-bottom: 0;">
+                            <i class="fa-solid fa-clock"></i>
+                            <span>Step 2: Choose Available Consultation Slot</span>
+                        </div>
+
+                        <div class="slot-legend">
+                            <div class="legend-item">
+                                <span class="legend-color legend-available"></span>
+                                <span>Available</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color legend-selected"></span>
+                                <span>Selected</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color legend-booked"></span>
+                                <span>Booked / Reserved</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="slots-grid" id="slotsGrid">
+                        <!-- Dynamic Slots Injected via booking.js -->
+                    </div>
+                </div>
+
+                <!-- 3. Reason for Consultation -->
+                <div style="margin-bottom: 32px;">
+                    <div class="schedule-section-title">
+                        <i class="fa-solid fa-clipboard-question"></i>
+                        <span>Step 3: Reason for Consultation (Symptoms / Medical Notes)</span>
+                    </div>
+                    <div class="input-box">
+                        <i class="fa-solid fa-pen input-icon" style="top: 14px;"></i>
+                        <textarea name="reason" rows="3" placeholder="Briefly describe your primary symptoms, concerns, or previous medical history..." style="width: 100%; padding: 12px 14px 12px 42px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-light); font-size: 14px; resize: vertical;">Routine clinical check-up and general consultation</textarea>
+                    </div>
+                </div>
+
+                <!-- Footer Navigation -->
+                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 24px; border-top: 1px solid var(--border-color);">
+                    <a href="{{ url_for('doctors_page') }}?hospital_id={{ doctor.hospital_id if doctor else '' }}" class="btn btn-outline">
+                        <i class="fa-solid fa-arrow-left"></i> Change Doctor
+                    </a>
+                    <button type="submit" class="btn btn-primary btn-lg" id="continueToSummaryBtn" disabled>
+                        <span>Review Appointment Details</span> <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/booking.js') }}"></script>
+{% endblock %}

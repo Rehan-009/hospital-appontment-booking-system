@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block title %}Select Specialist Doctor | MediCare Connect{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/booking.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Stepper Bar -->
+<div class="booking-stepper-wrap">
+    <div class="container">
+        <div class="booking-stepper">
+            <div class="step-item completed">
+                <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+                <span class="step-label">1. Select Hospital</span>
+            </div>
+            <div class="step-item active">
+                <div class="step-circle"><i class="fa-solid fa-user-doctor"></i></div>
+                <span class="step-label">2. Select Doctor</span>
+            </div>
+            <div class="step-item">
+                <div class="step-circle">3</div>
+                <span class="step-label">3. Date & Time</span>
+            </div>
+            <div class="step-item">
+                <div class="step-circle">4</div>
+                <span class="step-label">4. Review Summary</span>
+            </div>
+            <div class="step-item">
+                <div class="step-circle">5</div>
+                <span class="step-label">5. Payment</span>
+            </div>
+            <div class="step-item">
+                <div class="step-circle">6</div>
+                <span class="step-label">6. Confirmation</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Selected Hospital Banner if arrived from hospital step -->
+    {% if selected_hospital %}
+        <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 18px 24px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-sm);">
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="width: 48px; height: 48px; border-radius: var(--radius-md); background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                    <i class="fa-solid fa-hospital"></i>
+                </div>
+                <div>
+                    <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--primary); letter-spacing: 0.5px;">Current Selected Hospital</span>
+                    <h3 style="font-size: 18px; font-weight: 800; color: var(--dark); margin: 0;">{{ selected_hospital.name }}</h3>
+                    <span style="font-size: 12px; color: var(--text-muted);"><i class="fa-solid fa-location-dot"></i> {{ selected_hospital.location }}</span>
+                </div>
+            </div>
+            <a href="{{ url_for('hospitals_page') }}" class="btn btn-outline btn-sm">
+                <i class="fa-solid fa-arrow-left"></i> Change Hospital
+            </a>
+        </div>
+    {% endif %}
+
+    <div class="booking-layout">
+        <!-- Sidebar Filters -->
+        <aside class="filter-sidebar">
+            <div class="filter-title">
+                <span><i class="fa-solid fa-sliders"></i> Filter Doctors</span>
+                <a href="{{ url_for('doctors_page') }}{% if selected_hospital_id %}?hospital_id={{ selected_hospital_id }}{% endif %}" style="font-size: 12px; font-weight: 600;">Reset</a>
+            </div>
+
+            <form action="{{ url_for('doctors_page') }}" method="GET">
+                <!-- Retain hospital filter -->
+                <div class="filter-group">
+                    <label class="filter-label">Filter by Hospital</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-hospital"></i>
+                        <select name="hospital_id">
+                            <option value="">All Partner Hospitals</option>
+                            {% for h in hospitals %}
+                                <option value="{{ h.id }}" {% if selected_hospital_id|string == h.id|string %}selected{% endif %}>{{ h.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Department Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">Department / Specialty</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-stethoscope"></i>
+                        <select name="department_id">
+                            <option value="">All Specialities</option>
+                            {% for dept in departments %}
+                                <option value="{{ dept.name }}" {% if selected_department_id == dept.name %}selected{% endif %}>{{ dept.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Search -->
+                <div class="filter-group">
+                    <label class="filter-label">Doctor Name or Keyword</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" name="search" value="{{ search_query or '' }}" placeholder="e.g. Cardiologist, Priya">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fa-solid fa-filter"></i> Apply Filters
+                </button>
+            </form>
+
+            <div style="background: #f8fafc; border-radius: var(--radius-md); padding: 16px; margin-top: 24px; border: 1px solid var(--border-color); font-size: 13px;">
+                <div style="font-weight: 700; color: var(--dark); margin-bottom: 6px;">
+                    <i class="fa-solid fa-shield-halved" style="color: var(--secondary);"></i> Verified Credentials
+                </div>
+                <p style="color: var(--text-muted); font-size: 12px; line-height: 1.4;">
+                    All medical specialists undergo rigorous credential verification, state medical council checks, and ongoing peer review.
+                </p>
+            </div>
+        </aside>
+
+        <!-- Doctor Cards Grid -->
+        <main>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <div>
+                    <h1 style="font-size: 26px; font-weight: 800; color: var(--dark);">Available Doctors</h1>
+                    <p style="font-size: 14px; color: var(--text-muted);">Showing {{ doctors|length }} certified specialists available for in-clinic consultation</p>
+                </div>
+            </div>
+
+            {% if doctors %}
+                <div class="doctor-grid" style="grid-template-columns: repeat(3, 1fr); gap: 24px;">
+                    {% for doc in doctors %}
+                        <div class="doctor-card">
+                            <div class="doctor-thumb">
+                                <img src="{{ doc.image_url }}" alt="{{ doc.full_name }}" onerror="this.src='/static/images/doctor-1.png'">
+                                <div class="doctor-exp-badge">
+                                    <i class="fa-solid fa-award"></i> {{ doc.experience_years }} Years Experience
+                                </div>
+                            </div>
+
+                            <div class="doctor-body">
+                                <span class="doctor-dept">{{ doc.department_name }}</span>
+                                <h3 class="doctor-name">{{ doc.full_name }}</h3>
+                                <p class="doctor-qual">{{ doc.qualification }}</p>
+                                
+                                <div class="doctor-hospital-name" title="{{ doc.hospital_name }}">
+                                    <i class="fa-solid fa-hospital"></i> {{ doc.hospital_name }}
+                                </div>
+
+                                <p style="font-size: 12.5px; color: var(--dark-muted); line-height: 1.4; margin-bottom: 14px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                    {{ doc.bio }}
+                                </p>
+
+                                <div class="doctor-fee-schedule">
+                                    <div>
+                                        <span class="fee-label">Consultation Fee</span>
+                                        <span class="fee-amount">₹{{ "%.0f"|format(doc.consultation_fee) }}</span>
+                                    </div>
+                                    <div class="schedule-days">
+                                        <i class="fa-regular fa-clock"></i> 30 Min Slot<br>
+                                        <span style="font-size: 10px; color: var(--text-muted);">{{ doc.available_days }}</span>
+                                    </div>
+                                </div>
+
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: auto;">
+                                    <button type="button" class="btn btn-outline btn-sm" onclick="openDoctorBioModal('{{ doc.full_name }}', '{{ doc.qualification }}', '{{ doc.specialization }}', '{{ doc.experience_years }}', '{{ doc.hospital_name }}', '{{ doc.cabin_number }}', '{{ doc.bio | escape }}')">
+                                        View Profile
+                                    </button>
+                                    <a href="{{ url_for('appointment_page') }}?doctor_id={{ doc.id }}&hospital_id={{ doc.hospital_id }}&department_id={{ doc.department_id }}" class="btn btn-primary btn-sm">
+                                        Book Now
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div style="background: white; border-radius: var(--radius-lg); padding: 60px; text-align: center; border: 1px solid var(--border-color);">
+                    <i class="fa-solid fa-user-doctor fa-3x" style="color: #cbd5e1; margin-bottom: 16px;"></i>
+                    <h3 style="font-size: 18px; font-weight: 700; color: var(--dark); margin-bottom: 8px;">No Doctors Found</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 20px;">Try clearing filters or search for another department.</p>
+                    <a href="{{ url_for('doctors_page') }}" class="btn btn-primary">View All Doctors</a>
+                </div>
+            {% endif %}
+        </main>
+    </div>
+</div>
+
+<!-- Doctor Profile Modal -->
+<div class="modal-overlay" id="doctorBioModal">
+    <div class="modal-card" style="max-width: 600px;">
+        <button type="button" class="modal-close-btn" onclick="document.getElementById('doctorBioModal').classList.remove('active')">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="modal-header" style="text-align: left; padding-bottom: 10px;">
+            <span id="modalDocSpecialty" style="color: var(--primary); font-size: 12px; font-weight: 700; text-transform: uppercase;"></span>
+            <h2 id="modalDocName" style="font-size: 22px; font-weight: 800; color: var(--dark); margin: 4px 0;"></h2>
+            <p id="modalDocQual" style="font-size: 13px; color: var(--text-muted);"></p>
+        </div>
+        <div class="modal-body" style="padding-top: 10px;">
+            <div style="background: var(--bg-light); border-radius: var(--radius-md); padding: 14px 18px; margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; font-size: 13px;">
+                <div>
+                    <span style="color: var(--text-muted); font-size: 11px; display: block;">Affiliated Hospital</span>
+                    <strong id="modalDocHospital" style="color: var(--dark);"></strong>
+                </div>
+                <div>
+                    <span style="color: var(--text-muted); font-size: 11px; display: block;">OPD Cabin</span>
+                    <strong id="modalDocCabin" style="color: var(--dark);"></strong>
+                </div>
+                <div>
+                    <span style="color: var(--text-muted); font-size: 11px; display: block;">Clinical Experience</span>
+                    <strong id="modalDocExp" style="color: var(--dark);"></strong>
+                </div>
+                <div>
+                    <span style="color: var(--text-muted); font-size: 11px; display: block;">Patient Rating</span>
+                    <strong style="color: #eab308;"><i class="fa-solid fa-star"></i> 4.9 / 5.0</strong>
+                </div>
+            </div>
+
+            <h4 style="font-size: 14px; font-weight: 700; color: var(--dark); margin-bottom: 8px;">Physician Biography & Specializations</h4>
+            <p id="modalDocBio" style="font-size: 14px; color: var(--dark-muted); line-height: 1.6; margin-bottom: 24px;"></p>
+
+            <button type="button" class="btn btn-primary btn-block btn-lg" onclick="document.getElementById('doctorBioModal').classList.remove('active')">
+                Close Profile
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+function openDoctorBioModal(name, qual, spec, exp, hosp, cabin, bio) {
+    document.getElementById('modalDocName').textContent = name;
+    document.getElementById('modalDocQual').textContent = qual;
+    document.getElementById('modalDocSpecialty').textContent = spec;
+    document.getElementById('modalDocExp').textContent = exp + ' Years Experience';
+    document.getElementById('modalDocHospital').textContent = hosp;
+    document.getElementById('modalDocCabin').textContent = cabin;
+    document.getElementById('modalDocBio').textContent = bio;
+
+    document.getElementById('doctorBioModal').classList.add('active');
+}
+</script>
+
+{% endblock %}

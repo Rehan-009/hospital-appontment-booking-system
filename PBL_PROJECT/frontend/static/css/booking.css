@@ -1,0 +1,874 @@
+/* ===================================================
+   MediCare Hospital Appointment Booking System (HABS)
+   Booking Flow, Payment & Receipt Stylesheet
+   =================================================== */
+
+/* ================= STEPPER / BREADCRUMB ================= */
+.booking-stepper-wrap {
+    background: white;
+    border-bottom: 1px solid var(--border-color);
+    padding: 24px 0;
+    margin-bottom: 40px;
+}
+
+.booking-stepper {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.booking-stepper::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 40px;
+    right: 40px;
+    height: 3px;
+    background: #e2e8f0;
+    z-index: 1;
+}
+
+.step-item {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: default;
+}
+
+.step-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-full);
+    background: white;
+    border: 3px solid #cbd5e1;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 15px;
+    transition: var(--transition);
+    margin-bottom: 8px;
+}
+
+.step-item.active .step-circle {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.2);
+}
+
+.step-item.completed .step-circle {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: white;
+}
+
+.step-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.step-item.active .step-label {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.step-item.completed .step-label {
+    color: var(--dark);
+}
+
+/* ================= LAYOUTS WITH SIDEBAR ================= */
+.booking-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 32px;
+    margin-bottom: 70px;
+}
+
+.filter-sidebar {
+    background: white;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    height: fit-content;
+    position: sticky;
+    top: 100px;
+}
+
+.filter-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.filter-group {
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.filter-group:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.filter-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--dark-muted);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ================= APPOINTMENT SCHEDULING PAGE ================= */
+.schedule-container {
+    max-width: 1040px;
+    margin: 0 auto 60px;
+}
+
+.booking-header-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.doctor-mini-profile {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.doctor-mini-thumb {
+    width: 74px;
+    height: 74px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: #e0f2fe;
+}
+
+.doctor-mini-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.doctor-mini-info h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 4px;
+}
+
+.doctor-mini-info p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.doctor-mini-badges {
+    display: flex;
+    gap: 8px;
+}
+
+.mini-badge {
+    background: var(--bg-light);
+    border: 1px solid var(--border-color);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: var(--radius-full);
+    color: var(--dark-muted);
+}
+
+.mini-badge-primary {
+    background: var(--primary-light);
+    border-color: #bae6fd;
+    color: var(--primary-dark);
+}
+
+.fee-pill-box {
+    text-align: right;
+    background: var(--bg-light);
+    border-radius: var(--radius-md);
+    padding: 12px 20px;
+    border: 1px solid var(--border-color);
+}
+
+.fee-pill-box span {
+    font-size: 12px;
+    color: var(--text-muted);
+    display: block;
+}
+
+.fee-pill-box strong {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--dark);
+}
+
+/* Schedule Card */
+.schedule-grid-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    padding: 32px;
+}
+
+.schedule-section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.schedule-section-title i {
+    color: var(--primary);
+}
+
+.date-picker-row {
+    margin-bottom: 32px;
+}
+
+.date-input-group {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 20px;
+    align-items: center;
+}
+
+.date-selected-info {
+    font-size: 14px;
+    color: var(--secondary);
+    font-weight: 600;
+    background: var(--secondary-light);
+    padding: 12px 18px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Slots Grid */
+.slots-grid-wrapper {
+    margin-bottom: 32px;
+}
+
+.slot-legend {
+    display: flex;
+    gap: 20px;
+    font-size: 12px;
+    margin-bottom: 16px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+}
+
+.legend-available { background: white; border: 1px solid var(--primary); }
+.legend-selected { background: var(--primary); }
+.legend-booked { background: #e2e8f0; }
+
+.slots-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+}
+
+.slot-btn {
+    background: white;
+    border: 1px solid var(--border-color);
+    padding: 12px 8px;
+    border-radius: var(--radius-md);
+    text-align: center;
+    font-weight: 600;
+    font-size: 13.5px;
+    color: var(--dark);
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+}
+
+.slot-btn:hover:not(:disabled) {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary-dark);
+}
+
+.slot-btn.selected {
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: white !important;
+    box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
+}
+
+.slot-btn:disabled, .slot-btn.booked {
+    background: #f1f5f9;
+    color: #94a3b8;
+    border-color: #e2e8f0;
+    cursor: not-allowed;
+    text-decoration: line-through;
+}
+
+.slot-btn.booked::after {
+    content: 'Booked';
+    display: block;
+    font-size: 10px;
+    color: #ef4444;
+    text-decoration: none;
+    font-weight: 700;
+    margin-top: 2px;
+}
+
+/* ================= SUMMARY REVIEW PAGE ================= */
+.summary-container {
+    max-width: 880px;
+    margin: 0 auto 60px;
+}
+
+.summary-card {
+    background: white;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+.summary-header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: white;
+    padding: 28px 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.summary-header h1 {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 4px;
+}
+
+.summary-header p {
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+.summary-body {
+    padding: 36px;
+}
+
+.summary-section {
+    margin-bottom: 28px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.summary-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.summary-sec-title {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.summary-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.detail-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+}
+
+.detail-value {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--dark);
+}
+
+/* Bill Breakdown */
+.bill-breakdown {
+    background: var(--bg-light);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    border: 1px solid var(--border-color);
+}
+
+.bill-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 14.5px;
+    color: var(--dark-muted);
+}
+
+.bill-row.total-row {
+    border-top: 2px dashed #cbd5e1;
+    margin-top: 16px;
+    padding-top: 16px;
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--dark);
+}
+
+.bill-row.total-row span:last-child {
+    color: var(--primary);
+}
+
+.summary-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* ================= PAYMENT PAGE ================= */
+.payment-layout {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 32px;
+    max-width: 1040px;
+    margin: 0 auto 60px;
+}
+
+.payment-methods-card {
+    background: white;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    padding: 32px;
+}
+
+.payment-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 8px;
+}
+
+.payment-subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+}
+
+.payment-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 28px;
+}
+
+.pay-tab-btn {
+    background: var(--bg-light);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 12px 8px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--dark-muted);
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.pay-tab-btn i {
+    font-size: 20px;
+    color: var(--text-muted);
+}
+
+.pay-tab-btn.active {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary-dark);
+}
+
+.pay-tab-btn.active i {
+    color: var(--primary);
+}
+
+/* UPI Payment Panel */
+.upi-panel {
+    text-align: center;
+    padding: 20px;
+}
+
+.upi-qr-box {
+    width: 180px;
+    height: 180px;
+    margin: 0 auto 20px;
+    border: 2px dashed #94a3b8;
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #f8fafc;
+    position: relative;
+}
+
+.upi-qr-box i {
+    font-size: 90px;
+    color: #1e293b;
+    margin-bottom: 6px;
+}
+
+.upi-qr-box span {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--secondary);
+    text-transform: uppercase;
+}
+
+.upi-or {
+    margin: 16px 0;
+    position: relative;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+/* Card Payment Panel */
+.card-preview {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    color: white;
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.card-preview::after {
+    content: '';
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 150px;
+    height: 150px;
+    background: rgba(2, 132, 199, 0.2);
+    border-radius: var(--radius-full);
+}
+
+.card-chip {
+    width: 44px;
+    height: 32px;
+    background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+    border-radius: 6px;
+    margin-bottom: 24px;
+}
+
+.card-num-preview {
+    font-family: monospace;
+    font-size: 19px;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+}
+
+.card-holder-exp {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.card-holder-exp strong {
+    display: block;
+    font-size: 14px;
+    margin-top: 2px;
+}
+
+/* Simulated Payment Overlay */
+.payment-processing-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--transition);
+}
+
+.payment-processing-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.processing-card {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: 48px;
+    text-align: center;
+    max-width: 440px;
+    width: 90%;
+    box-shadow: var(--shadow-xl);
+}
+
+.payment-spinner {
+    width: 70px;
+    height: 70px;
+    border: 5px solid #e0f2fe;
+    border-top-color: var(--primary);
+    border-radius: var(--radius-full);
+    animation: spin 1s linear infinite;
+    margin: 0 auto 24px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.processing-card h3 {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 8px;
+}
+
+.processing-card p {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+}
+
+/* ================= CONFIRMATION RECEIPT ================= */
+.receipt-wrapper {
+    max-width: 780px;
+    margin: 0 auto 60px;
+}
+
+.receipt-success-banner {
+    background: var(--accent);
+    color: white;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: 24px;
+    text-align: center;
+}
+
+.receipt-success-banner i {
+    font-size: 40px;
+    margin-bottom: 8px;
+}
+
+.receipt-success-banner h1 {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.hospital-receipt {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-top: none;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: 40px;
+    position: relative;
+}
+
+.receipt-watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    font-size: 100px;
+    font-weight: 900;
+    color: rgba(2, 132, 199, 0.04);
+    pointer-events: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.receipt-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 24px;
+    border-bottom: 2px solid var(--dark);
+    margin-bottom: 28px;
+}
+
+.receipt-hospital-info h2 {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 4px;
+}
+
+.receipt-hospital-info p {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+.receipt-apt-meta {
+    text-align: right;
+}
+
+.receipt-apt-id {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--primary);
+    font-family: monospace;
+}
+
+.receipt-barcode {
+    font-family: 'Libre Barcode 39', monospace;
+    font-size: 32px;
+    letter-spacing: 4px;
+    margin-top: 4px;
+}
+
+.receipt-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 30px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.receipt-block h4 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.receipt-block p {
+    font-size: 14px;
+    color: var(--dark);
+    margin-bottom: 4px;
+}
+
+.receipt-block strong {
+    font-weight: 700;
+}
+
+.receipt-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 28px;
+}
+
+.receipt-table th {
+    background: var(--bg-light);
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--dark-muted);
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.receipt-table td {
+    padding: 14px 16px;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.receipt-footer-notes {
+    background: #f8fafc;
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    border-left: 3px solid var(--secondary);
+    margin-bottom: 32px;
+}
+
+.receipt-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
+/* Print Styles */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    .hospital-receipt, .hospital-receipt * {
+        visibility: visible;
+    }
+    .hospital-receipt {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        border: none;
+        box-shadow: none;
+        padding: 20px;
+    }
+    .receipt-actions, .top-bar, .header, .footer {
+        display: none !important;
+    }
+}

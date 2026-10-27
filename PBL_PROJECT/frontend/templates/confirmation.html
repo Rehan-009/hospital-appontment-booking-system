@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Appointment Confirmed | Official Hospital Receipt{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/booking.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Stepper Bar -->
+<div class="booking-stepper-wrap">
+    <div class="container">
+        <div class="booking-stepper">
+            <div class="step-item completed">
+                <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+                <span class="step-label">1. Select Hospital</span>
+            </div>
+            <div class="step-item completed">
+                <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+                <span class="step-label">2. Select Doctor</span>
+            </div>
+            <div class="step-item completed">
+                <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+                <span class="step-label">3. Date & Time</span>
+            </div>
+            <div class="step-item completed">
+                <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+                <span class="step-label">4. Review Summary</span>
+            </div>
+            <div class="step-item completed">
+                <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+                <span class="step-label">5. Payment</span>
+            </div>
+            <div class="step-item completed active">
+                <div class="step-circle"><i class="fa-solid fa-circle-check"></i></div>
+                <span class="step-label">6. Confirmation</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="receipt-wrapper">
+        <!-- Success Banner -->
+        <div class="receipt-success-banner">
+            <i class="fa-solid fa-circle-check"></i>
+            <h1>APPOINTMENT CONFIRMED</h1>
+            <p>Your hospital consultation has been officially scheduled and paid.</p>
+        </div>
+
+        <!-- Official Hospital Receipt -->
+        <div class="hospital-receipt" id="printableReceipt">
+            <div class="receipt-watermark">CONFIRMED</div>
+
+            <!-- Receipt Hospital Header -->
+            <div class="receipt-header-row">
+                <div class="receipt-hospital-info">
+                    <h2>{{ appointment.hospital_name }}</h2>
+                    <p><i class="fa-solid fa-location-dot"></i> {{ appointment.hospital_address }}</p>
+                    <p><i class="fa-solid fa-phone"></i> {{ appointment.hospital_phone }} | <i class="fa-solid fa-envelope"></i> {{ appointment.hospital_email }}</p>
+                    <p style="font-size: 11px; color: var(--secondary); font-weight: 700; margin-top: 4px;">
+                        NABH / JCI ACCREDITED MULTI-SPECIALITY HEALTHCARE
+                    </p>
+                </div>
+                <div class="receipt-apt-meta">
+                    <span style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Appointment Reference</span>
+                    <div class="receipt-apt-id">{{ appointment.appointment_number }}</div>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+                        Booking Date: {{ appointment.created_at[:10] if appointment.created_at else today_date }}
+                    </div>
+                    <div class="receipt-barcode">*{{ appointment.appointment_number }}*</div>
+                </div>
+            </div>
+
+            <!-- 3 Column Metadata Grid -->
+            <div class="receipt-grid-3">
+                <div class="receipt-block">
+                    <h4>Patient Details</h4>
+                    <p><strong>{{ appointment.patient_name }}</strong></p>
+                    <p>Age/Gender: {{ appointment.patient_age }} Yrs / {{ appointment.patient_gender }}</p>
+                    <p>Contact: {{ appointment.patient_phone }}</p>
+                    <p>Email: {{ appointment.patient_email }}</p>
+                </div>
+
+                <div class="receipt-block">
+                    <h4>Consulting Physician</h4>
+                    <p><strong>{{ appointment.doctor_name }}</strong></p>
+                    <p style="color: var(--primary); font-size: 12.5px;">{{ appointment.doctor_qualification }}</p>
+                    <p>{{ appointment.department_name }}</p>
+                    <p>Location: <strong>{{ appointment.cabin_number }}</strong></p>
+                </div>
+
+                <div class="receipt-block">
+                    <h4>Schedule Details</h4>
+                    <p>Date: <strong>{{ appointment.appointment_date }}</strong></p>
+                    <p>Time Slot: <strong style="color: #0369a1;">{{ appointment.appointment_time }}</strong></p>
+                    <p>Status: <span style="background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 11px;">CONFIRMED</span></p>
+                    <p>Type: Out-Patient (OPD)</p>
+                </div>
+            </div>
+
+            <!-- Financial Table -->
+            <table class="receipt-table">
+                <thead>
+                    <tr>
+                        <th>Item Description</th>
+                        <th>Department</th>
+                        <th style="text-align: right;">Amount (INR)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <strong>Outpatient Specialist Consultation Fee</strong><br>
+                            <span style="font-size: 12px; color: var(--text-muted);">Consultation with {{ appointment.doctor_name }}</span>
+                        </td>
+                        <td>{{ appointment.department_name }}</td>
+                        <td style="text-align: right; font-weight: 600;">₹{{ "%.2f"|format(appointment.consultation_fee) }}</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>Hospital Administration & Digital Health Records</strong><br>
+                            <span style="font-size: 12px; color: var(--text-muted);">Electronic prescription & queue token</span>
+                        </td>
+                        <td>OPD Services</td>
+                        <td style="text-align: right; font-weight: 600;">₹{{ "%.2f"|format(appointment.additional_charges or 50.00) }}</td>
+                    </tr>
+                    <tr style="background: var(--bg-light); font-weight: 800; font-size: 15px;">
+                        <td colspan="2">TOTAL AMOUNT PAID</td>
+                        <td style="text-align: right; color: var(--primary);">₹{{ "%.2f"|format(appointment.payment_total or (appointment.consultation_fee + 50)) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Payment Confirmation Block -->
+            <div style="background: var(--bg-light); border-radius: var(--radius-md); padding: 14px 20px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color);">
+                <div>
+                    <span style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Payment Verification</span>
+                    <div style="font-weight: 700; color: var(--dark); font-size: 13.5px;">
+                        Transaction Ref: <span style="font-family: monospace;">{{ appointment.transaction_id or 'TXN_UPI_99482910' }}</span>
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-muted);">
+                        Method: {{ appointment.payment_method or 'UPI' }} • Receipt No: {{ appointment.payment_number or 'PAY-MED-10294' }}
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <span style="background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; padding: 4px 12px; border-radius: var(--radius-full); font-weight: 800; font-size: 12px;">
+                        <i class="fa-solid fa-circle-check"></i> PAID - SUCCESS
+                    </span>
+                </div>
+            </div>
+
+            <!-- Hospital Instructions -->
+            <div class="receipt-footer-notes">
+                <strong><i class="fa-solid fa-circle-info"></i> Hospital Instructions for Patients:</strong>
+                <ul style="list-style: disc; margin-left: 20px; margin-top: 4px;">
+                    <li>Please report at the OPD reception desk 15 minutes before your scheduled appointment time.</li>
+                    <li>Carry a government-issued photo ID along with this digital receipt.</li>
+                    <li>If you need to reschedule or cancel, you can do so through your Patient Dashboard at least 2 hours prior to the time slot.</li>
+                </ul>
+            </div>
+
+            <!-- Receipt Actions -->
+            <div class="receipt-actions">
+                <button type="button" class="btn btn-outline btn-lg" onclick="window.print()">
+                    <i class="fa-solid fa-print"></i> Print Receipt
+                </button>
+                <a href="{{ url_for('patient_dashboard_page') }}" class="btn btn-primary btn-lg">
+                    <i class="fa-solid fa-gauge"></i> Go to Patient Dashboard
+                </a>
+                <a href="{{ url_for('hospitals_page') }}" class="btn btn-outline btn-lg">
+                    <i class="fa-solid fa-plus"></i> Book Another
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

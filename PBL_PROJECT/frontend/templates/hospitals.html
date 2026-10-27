@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Select Hospital | MediCare Connect{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/booking.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Stepper Bar -->
+<div class="booking-stepper-wrap">
+    <div class="container">
+        <div class="booking-stepper">
+            <div class="step-item active">
+                <div class="step-circle"><i class="fa-solid fa-hospital"></i></div>
+                <span class="step-label">1. Select Hospital</span>
+            </div>
+            <div class="step-item">
+                <div class="step-circle">2</div>
+                <span class="step-label">2. Select Doctor</span>
+            </div>
+            <div class="step-item">
+                <div class="step-circle">3</div>
+                <span class="step-label">3. Date & Time</span>
+            </div>
+            <div class="step-item">
+                <div class="step-circle">4</div>
+                <span class="step-label">4. Review Summary</span>
+            </div>
+            <div class="step-item">
+                <div class="step-circle">5</div>
+                <span class="step-label">5. Payment</span>
+            </div>
+            <div class="step-item">
+                <div class="step-circle">6</div>
+                <span class="step-label">6. Confirmation</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="booking-layout">
+        <!-- Filter Sidebar -->
+        <aside class="filter-sidebar">
+            <div class="filter-title">
+                <span><i class="fa-solid fa-sliders"></i> Filter Hospitals</span>
+                <a href="{{ url_for('hospitals_page') }}" style="font-size: 12px; font-weight: 600;">Reset All</a>
+            </div>
+
+            <form action="{{ url_for('hospitals_page') }}" method="GET">
+                <!-- Search by name -->
+                <div class="filter-group">
+                    <label class="filter-label">Search Hospital</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" name="search" value="{{ search_query or '' }}" placeholder="Hospital name...">
+                    </div>
+                </div>
+
+                <!-- Filter by Location -->
+                <div class="filter-group">
+                    <label class="filter-label">Location / City Area</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <select name="location">
+                            <option value="">All Locations</option>
+                            <option value="Downtown" {% if selected_location == 'Downtown' %}selected{% endif %}>Downtown District</option>
+                            <option value="Westside" {% if selected_location == 'Westside' %}selected{% endif %}>Westside Health Corridor</option>
+                            <option value="North" {% if selected_location == 'North' %}selected{% endif %}>North City Campus</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Filter by Department -->
+                <div class="filter-group">
+                    <label class="filter-label">Medical Department</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-stethoscope"></i>
+                        <select name="department_id">
+                            <option value="">All Departments</option>
+                            {% for dept in departments %}
+                                <option value="{{ dept.name }}" {% if selected_department == dept.name %}selected{% endif %}>{{ dept.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fa-solid fa-filter"></i> Apply Filters
+                </button>
+            </form>
+
+            <div style="background: var(--bg-light); border-radius: var(--radius-md); padding: 16px; margin-top: 24px; font-size: 13px; color: var(--text-muted);">
+                <i class="fa-solid fa-circle-info" style="color: var(--primary);"></i>
+                <strong>Direct Admission:</strong> All network hospitals support cashless insurance desks and walk-in trauma response.
+            </div>
+        </aside>
+
+        <!-- Hospital Cards List -->
+        <main>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <div>
+                    <h1 style="font-size: 26px; font-weight: 800; color: var(--dark);">Select a Hospital</h1>
+                    <p style="font-size: 14px; color: var(--text-muted);">Showing {{ hospitals|length }} verified healthcare facilities available for booking</p>
+                </div>
+            </div>
+
+            {% if hospitals %}
+                <div class="hospital-grid" style="grid-template-columns: 1fr; gap: 24px;">
+                    {% for hosp in hospitals %}
+                        <div class="hospital-card" style="display: grid; grid-template-columns: 320px 1fr; border-radius: var(--radius-xl);">
+                            <div class="hospital-thumb" style="height: 100%;">
+                                <img src="{{ hosp.image_url }}" alt="{{ hosp.name }}" onerror="this.src='/static/images/hospital-1.png'">
+                                <div class="hospital-badge-top">
+                                    <i class="fa-solid fa-location-dot"></i> {{ hosp.location }}
+                                </div>
+                                <div class="hospital-rating">
+                                    <i class="fa-solid fa-star"></i>
+                                    <span>{{ hosp.rating }}</span> ({{ hosp.total_reviews }} reviews)
+                                </div>
+                            </div>
+
+                            <div class="hospital-body" style="padding: 28px;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                    <div>
+                                        <h2 class="hospital-name" style="font-size: 22px;">{{ hosp.name }}</h2>
+                                        <p style="font-size: 13px; color: var(--secondary); font-weight: 600; margin-bottom: 8px;">
+                                            <i class="fa-solid fa-award"></i> {{ hosp.tagline }}
+                                        </p>
+                                    </div>
+                                    <span style="background: #e0f2fe; color: #0284c7; padding: 4px 10px; border-radius: var(--radius-full); font-size: 12px; font-weight: 700;">
+                                        <i class="fa-solid fa-shield-check"></i> JCI Verified
+                                    </span>
+                                </div>
+
+                                <div class="hospital-location" style="margin-bottom: 12px;">
+                                    <i class="fa-solid fa-map-location-dot"></i> {{ hosp.address }}
+                                </div>
+
+                                <p class="hospital-desc" style="-webkit-line-clamp: 3; margin-bottom: 16px;">
+                                    {{ hosp.description }}
+                                </p>
+
+                                <!-- Key Contact & Metadata -->
+                                <div class="hospital-meta" style="margin-bottom: 20px;">
+                                    <div class="meta-item">
+                                        <i class="fa-solid fa-user-doctor"></i>
+                                        <strong>{{ hosp.doctor_count or '8+' }} Doctors Available</strong>
+                                    </div>
+                                    <div class="meta-item">
+                                        <i class="fa-solid fa-phone"></i>
+                                        <span>{{ hosp.phone }}</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <i class="fa-solid fa-truck-medical"></i>
+                                        <span>{{ hosp.emergency_hours }}</span>
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div style="display: flex; gap: 14px; margin-top: auto;">
+                                    <a href="{{ url_for('doctors_page') }}?hospital_id={{ hosp.id }}" class="btn btn-outline" style="flex: 1;">
+                                        <i class="fa-solid fa-user-doctor"></i> View Doctors
+                                    </a>
+                                    <a href="{{ url_for('doctors_page') }}?hospital_id={{ hosp.id }}" class="btn btn-primary" style="flex: 1.2;">
+                                        <i class="fa-solid fa-calendar-check"></i> Book Appointment
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div style="background: white; border-radius: var(--radius-lg); padding: 60px; text-align: center; border: 1px solid var(--border-color);">
+                    <i class="fa-solid fa-hospital-slash fa-3x" style="color: #cbd5e1; margin-bottom: 16px;"></i>
+                    <h3 style="font-size: 18px; font-weight: 700; color: var(--dark); margin-bottom: 8px;">No Hospitals Matched Your Filters</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 20px;">Try adjusting your search criteria or clear location filters.</p>
+                    <a href="{{ url_for('hospitals_page') }}" class="btn btn-primary">Reset Filters</a>
+                </div>
+            {% endif %}
+        </main>
+    </div>
+</div>
+
+{% endblock %}
